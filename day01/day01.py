@@ -1,24 +1,34 @@
 from pathlib import Path
 import numpy as np
 
-input_path = Path(__file__).parent.joinpath("test-input.txt")
+input_path = Path(__file__).parent.joinpath("input.txt")
 
 with open(input_path, "r") as f:
     raw_input = f.read().splitlines()
 
-print(raw_input)
+# print(raw_input)
+count_gaps = sum(np.array(raw_input) == "")  # you can create the matrix from here
 
-mat = np.array([], dtype=int)
+mat = np.zeros((count_gaps + 1, len(raw_input) - count_gaps), dtype=int)
 vec = []
-for i in raw_input:
-    if i == "":
-        new_row = np.hstack([np.zeros((1, mat.shape[1])), 1])
-        mat = np.vstack([np.hstack([mat, 0]), new_row])
+row_i = 0
+for i, cal in enumerate(raw_input):
+    if cal == "":
+        row_i += 1
     else:
-        mat = np.hstack([mat, 1])
-        vec += [i]
+        mat[row_i, i - row_i] += 1
+        vec += [cal]
+# print(f"{mat=}")
+# print(f"{vec=}")
 
-    print(f"{mat=}")
-    print(f"{vec=}")
+elfs = mat @ np.array(vec, dtype=int).T
+#  part 2
+n = 3
+vals = []
+for _ in range(n):
+    vals.append(max(elfs))
+    elfs = elfs[elfs != vals[-1]]
 
-# if __name__ == "__main__":
+print(sum(vals))
+
+# if __name__ == "__main__"k:
